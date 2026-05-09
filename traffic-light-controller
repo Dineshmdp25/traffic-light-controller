@@ -1,0 +1,174 @@
+module traffic_4way_controller(
+
+    input clk,
+    input rst,
+
+    // North
+    output reg nr,
+    output reg ny,
+    output reg ng,
+
+    // South
+    output reg sr,
+    output reg sy,
+    output reg sg,
+
+    // East
+    output reg er,
+    output reg ey,
+    output reg eg,
+
+    // West
+    output reg wr,
+    output reg wy,
+    output reg wg
+);
+
+
+reg [1:0] state;
+reg [3:0] count;
+
+
+// State encoding
+parameter NS_GREEN  = 2'b00;
+parameter NS_YELLOW = 2'b01;
+parameter EW_GREEN  = 2'b10;
+parameter EW_YELLOW = 2'b11;
+
+
+
+always @(posedge clk or posedge rst)
+begin
+
+    if(rst)
+    begin
+        state <= NS_GREEN;
+        count <= 0;
+    end
+
+    else
+    begin
+
+        case(state)
+
+            NS_GREEN:
+            begin
+                if(count == 4)
+                begin
+                    state <= NS_YELLOW;
+                    count <= 0;
+                end
+                else
+                    count <= count + 1;
+            end
+
+
+            NS_YELLOW:
+            begin
+                if(count == 1)
+                begin
+                    state <= EW_GREEN;
+                    count <= 0;
+                end
+                else
+                    count <= count + 1;
+            end
+
+
+            EW_GREEN:
+            begin
+                if(count == 4)
+                begin
+                    state <= EW_YELLOW;
+                    count <= 0;
+                end
+                else
+                    count <= count + 1;
+            end
+
+
+            EW_YELLOW:
+            begin
+                if(count == 1)
+                begin
+                    state <= NS_GREEN;
+                    count <= 0;
+                end
+                else
+                    count <= count + 1;
+            end
+
+        endcase
+
+    end
+
+end
+
+always @(*)
+begin
+
+    // Default OFF
+    nr=0; ny=0; ng=0;
+    sr=0; sy=0; sg=0;
+    er=0; ey=0; eg=0;
+    wr=0; wy=0; wg=0;
+
+
+    case(state)
+
+        
+        NS_GREEN:
+        begin
+
+            ng = 1;
+            sg = 1;
+
+            er = 1;
+            wr = 1;
+
+        end
+
+
+       
+        NS_YELLOW:
+        begin
+
+            ny = 1;
+            sy = 1;
+
+            er = 1;
+            wr = 1;
+
+        end
+
+
+      
+        EW_GREEN:
+        begin
+
+            eg = 1;
+            wg = 1;
+
+            nr = 1;
+            sr = 1;
+
+        end
+
+
+        
+        EW_YELLOW:
+        begin
+
+            ey = 1;
+            wy = 1;
+
+            nr = 1;
+            sr = 1;
+
+        end
+
+    endcase
+
+end
+
+endmodule
