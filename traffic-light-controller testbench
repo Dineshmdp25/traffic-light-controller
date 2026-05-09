@@ -1,0 +1,55 @@
+module tb;
+
+reg clk;
+reg rst;
+
+
+wire nr,ny,ng;
+wire sr,sy,sg;
+wire er,ey,eg;
+wire wr,wy,wg;
+
+
+
+traffic_4way_controller dut(
+
+    .clk(clk),
+    .rst(rst),
+
+    .nr(nr), .ny(ny), .ng(ng),
+    .sr(sr), .sy(sy), .sg(sg),
+
+    .er(er), .ey(ey), .eg(eg),
+    .wr(wr), .wy(wy), .wg(wg)
+
+);
+
+
+
+// Clock generation
+always #5 clk = ~clk;
+
+
+
+initial
+begin
+
+    clk = 0;
+    rst = 1;
+
+    #10 rst = 0;
+
+    #300 $finish;
+
+end
+
+
+initial
+begin
+
+    $dumpfile("traffic.vcd");
+    $dumpvars(0,tb);
+
+end
+
+endmodule
